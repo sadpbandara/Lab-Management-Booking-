@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Student Report - LabManager{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto mt-8">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-slate-800">සිසුන්ගේ සහභාගීත්ව වාර්තා (Analytics)</h2>
+        <a href="{% url 'lecturer_dashboard' %}" class="text-blue-600 text-sm font-medium hover:underline">ආපසු Dashboard එකට</a>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-6">
+        <form method="GET" action="" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div class="md:col-span-1">
+                <label class="block text-sm font-medium text-slate-700 mb-1">සිසුවා තෝරන්න</label>
+                <select name="student_id" required class="w-full px-4 py-2 border rounded-lg outline-none">
+                    <option value="" disabled {% if not selected_student %}selected{% endif %}>Select Student...</option>
+                    {% for student in students %}
+                        <option value="{{ student.id }}" {% if selected_student.id == student.id %}selected{% endif %}>
+                            {{ student.reg_no }} - {{ student.user.first_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">ආරම්භක දිනය (විකල්ප)</label>
+                <input type="date" name="start_date" value="{{ start_date|default:'' }}" class="w-full px-4 py-2 border rounded-lg outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">අවසන් දිනය (විකල්ප)</label>
+                <input type="date" name="end_date" value="{{ end_date|default:'' }}" class="w-full px-4 py-2 border rounded-lg outline-none">
+            </div>
+            <div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors">
+                    🔍 වාර්තාව බලන්න
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {% if selected_student %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Result Summary -->
+        <div class="bg-indigo-50 border border-indigo-100 p-6 rounded-2xl flex flex-col justify-center items-center text-center">
+            <h3 class="text-indigo-800 font-bold mb-2">{{ selected_student.user.get_full_name }}</h3>
+            <p class="text-sm text-indigo-600 mb-4">{{ selected_student.reg_no }} | Batch: {{ selected_student.batch.name }}</p>
+            <p class="text-sm text-indigo-600 font-medium mb-1">සහභාගී වූ මුළු කාලය</p>
+            <p class="text-4xl font-extrabold text-indigo-700">{{ total_hours }} <span class="text-lg">Hours</span></p>
+        </div>
+
+        <!-- Attended Sessions Table -->
+        <div class="md:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <h3 class="text-lg font-bold text-slate-800 mb-4 border-b pb-2">පැමිණි දින ලැයිස්තුව</h3>
+            <div class="overflow-y-auto max-h-64">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="text-slate-500 border-b border-slate-100 sticky top-0 bg-white">
+                            <th class="pb-2 font-medium">දිනය</th>
+                            <th class="pb-2 font-medium">වේලාව</th>
+                            <th class="pb-2 font-medium">ලැප්ටොප්</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-slate-700">
+                        {% for booking in report_bookings %}
+                        <tr class="border-b border-slate-50">
+                            <td class="py-2">{{ booking.date }}</td>
+                            <td class="py-2">{{ booking.time_slot.start_time|time:"h:i A" }} - {{ booking.time_slot.end_time|time:"h:i A" }}</td>
+                            <td class="py-2">{{ booking.laptop.lap_no }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="py-4 text-center text-slate-400">මෙම කාලසීමාව තුළ සහභාගී වී නොමැත.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

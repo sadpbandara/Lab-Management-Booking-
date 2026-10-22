@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+    <div class="bg-white p-6 rounded-2xl shadow-sm border">
+        <h3 class="font-bold mb-4">නව නිවාඩුවක්/විභාගයක් එක් කරන්න</h3>
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <input type="date" name="date" required class="w-full px-4 py-2 border rounded-lg">
+            <select name="event_type" required class="w-full px-4 py-2 border rounded-lg">
+                <option value="holiday">Holiday</option>
+                <option value="exam_it">IT Exam</option>
+                <option value="exam_english">English Exam</option>
+            </select>
+            <input type="text" name="description" placeholder="Description (Optional)" class="w-full px-4 py-2 border rounded-lg">
+            <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg">Add Event</button>
+        </form>
+    </div>
+    
+    <div class="bg-white p-6 rounded-2xl shadow-sm border">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border">
+        <h3 class="font-bold mb-4">අවහිර කළ දින ලැයිස්තුව</h3>
+        
+        {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                <div class="p-2 text-sm rounded-lg bg-green-50 text-green-700 border border-green-100 mb-2">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <ul class="space-y-3">
+            {% for event in events %}
+                <li class="p-3 bg-slate-50 border rounded-lg text-sm flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+                    <div>
+                        <strong>{{ event.date|date:"Y-m-d" }}</strong> - <span class="text-blue-600 font-medium">{{ event.get_event_type_display }}</span> <br>
+                        <span class="text-slate-500">{{ event.description }}</span>
+                    </div>
+                    <div class="flex space-x-2">
+                        <a href="{% url 'edit_holiday' event.id %}" class="text-indigo-600 hover:text-indigo-800 bg-indigo-100 px-3 py-1.5 rounded text-xs font-medium transition-colors">Edit</a>
+                        <a href="{% url 'delete_holiday' event.id %}" onclick="return confirm('මෙම දිනය අවහිර කිරීමෙන් ඉවත් කිරීමට අවශ්‍ය බව විශ්වාසද?');" class="text-red-600 hover:text-red-800 bg-red-100 px-3 py-1.5 rounded text-xs font-medium transition-colors">Delete</a>
+                    </div>
+                </li>
+            {% empty %}
+                <li class="p-3 text-center text-slate-400">දැනට අවහිර කළ දින කිසිවක් නොමැත.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    </div>
+</div>
+{% endblock %}

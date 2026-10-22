@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Students - LabManager{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white p-8 rounded-2xl shadow-sm border border-slate-100 mt-8">
+    <div class="flex justify-between items-center mb-6 border-b pb-4">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-800">සිසුන් සමූහයක් ඇතුළත් කිරීම</h2>
+            <p class="text-sm text-slate-500 mt-1">CSV ගොනුවක් (Excel) භාවිතයෙන් සිසුන් පද්ධතියට ලියාපදිංචි කරන්න.</p>
+        </div>
+        <a href="{% url 'lecturer_dashboard' %}" class="text-blue-600 font-medium hover:underline text-sm">ආපසු</a>
+    </div>
+
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="p-3 text-sm rounded-lg {% if message.tags == 'error' %}bg-red-50 text-red-600{% else %}bg-green-50 text-green-600{% endif %} border text-center">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="bg-blue-50 p-4 rounded-lg mb-6 border border-blue-100">
+        <h4 class="font-bold text-blue-800 mb-2">💡 CSV ගොනුවේ ආකෘතිය මෙලෙස විය යුතුය:</h4>
+        <p class="text-sm text-blue-700 font-mono">username, first_name, last_name, password, reg_no, e_number, programme, batch_name</p>
+        <p class="text-xs text-blue-600 mt-2">* Batch නම පද්ධතියේ දැනට පවතින නමකට සමාන විය යුතුය.</p>
+    </div>
+
+    <form method="POST" action="" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+        <div class="border-2 border-dashed border-slate-300 p-6 rounded-lg text-center">
+            <input type="file" name="csv_file" accept=".csv" required class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+        </div>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition-colors">
+            Upload CSV File
+        </button>
+    </form>
+</div>
+{% endblock %}

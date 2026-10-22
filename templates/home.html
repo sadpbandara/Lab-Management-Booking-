@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %} <!-- අනිවාර්යයෙන්ම මෙය ඉහළින් තිබිය යුතුය -->
+
+{% block content %}
+<div class="min-h-[75vh] flex flex-col justify-center items-center text-center px-4">
+    
+    <!-- Logo Section -->
+    <div class="mb-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-all">
+        <img src="{% static 'images/esoft-metro-campus-colombo-sri-lanka.webp' %}" alt="ESOFT Metro Campus" class="h-28 md:h-36 object-contain mx-auto">
+    </div>
+
+    <!-- Typography -->
+    <h1 class="text-3xl md:text-5xl font-extrabold text-[#1a237e] tracking-tight mb-3">
+        Lab Management System
+    </h1>
+    <p class="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-10 font-medium italic">
+        "Shaping Lives, Creating Futures."
+    </p>
+
+    <!-- Login/Signup Section -->
+    {% if not user.is_authenticated %}
+    <div class="bg-white p-8 rounded-2xl shadow-lg border-t-4 border-[#e31837] w-full max-w-md mx-auto">
+        <h2 class="text-2xl font-bold text-slate-800 mb-2">පද්ධතියට ඇතුළු වන්න</h2>
+        <p class="text-sm text-slate-500 mb-8">කරුණාකර පද්ධතිය භාවිතා කිරීම සඳහා ලොග් වන්න හෝ නව සිසුවෙකු ලෙස ලියාපදිංචි වන්න.</p>
+        
+        <div class="flex flex-col space-y-4">
+            <a href="{% url 'login' %}" class="w-full bg-[#1a237e] hover:bg-blue-900 text-white font-medium py-3.5 px-4 rounded-lg transition-colors shadow-md flex justify-center items-center text-lg">
+                <span class="mr-2">🔐</span> ලොග් වන්න (Login)
+            </a>
+            <a href="{% url 'student_signup' %}" class="w-full bg-white hover:bg-slate-50 text-[#e31837] border-2 border-[#e31837] font-medium py-3 px-4 rounded-lg transition-colors flex justify-center items-center text-lg">
+                <span class="mr-2">📝</span> ලියාපදිංචි වන්න (Sign Up)
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

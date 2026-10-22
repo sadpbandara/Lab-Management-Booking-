@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Lab Management System{% endblock %}</title>
+    <!-- Tailwind CSS (Development) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* ඇසට පහසු මෘදු ෆොන්ට් ශෛලියක් */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-blue-200">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-xl font-bold text-blue-600 tracking-tight">LabManager</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- ජංගම දුරකථන සඳහා ගැලපෙන මෙනුවක් ඉදිරියේදී මෙහි එක් කරමු -->
+                    <a href="{% url 'home' %}" class="text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</a>
+                    {% if user.is_authenticated %}
+                    <span class="text-sm font-medium text-slate-600 mr-4">Hi, {{ user.username }}</span>
+                    <a href="{% url 'logout' %}" class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors">Logout</a>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-colors">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm text-slate-500">
+            &copy; 2026 Lab Management System. All rights reserved.
+        </div>
+    </footer>
+
+</body>
+</html>

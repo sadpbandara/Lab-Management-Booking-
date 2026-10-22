@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Lecturer Dashboard - LabManager{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Welcome Banner -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-6 flex flex-col md:flex-row justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold text-slate-800">ආයුබෝවන්, Lecturer! 👨‍🏫</h2>
+            <p class="text-sm text-slate-500 mt-1">පරිගණක වෙන්කිරීම් සහ පැමිණීම් මෙතැනින් කළමනාකරණය කරන්න.</p>
+        </div>
+        <div class="mt-4 md:mt-0 space-x-3 flex">
+            <!-- Excel Download Button -->
+            <a href="{% url 'export_bookings' %}" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center text-sm">
+                <span class="mr-2">📊</span> Download Excel
+            </a>
+            <a href="{% url 'pending_students' %}" class="bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center text-sm">
+                <span class="mr-2">👥</span> සිසුන් අනුමත කිරීම
+            </a>
+            <a href="{% url 'upload_students' %}" class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center text-sm">
+                <span class="mr-2">📂</span> Bulk Upload
+            </a>
+            <a href="{% url 'student_report' %}" class="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center text-sm">
+                <span class="mr-2">📈</span> සිසුන්ගේ වාර්තා
+            </a>
+            <a href="{% url 'manage_batches' %}" class="bg-blue-800 hover:bg-blue-900 text-white font-medium py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center text-sm">
+                <span class="mr-2">🏫</span> Batches කළමනාකරණය
+            </a>
+            <!-- අනාගතයේදී නිවාඩු දැමීමට බොත්තමක් -->
+            <a href="{% url 'manage_holidays' %}" target="_blank" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center text-sm">
+                <span class="mr-2">📅</span> නිවාඩු යාවත්කාලීන
+            </a>
+        </div>
+    </div>
+    <!-- lecturer_dashboard.html හි Welcome Banner එකට පහළින් එක් කරන්න -->
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-6 flex items-end space-x-4">
+        <form method="GET" action="" class="flex items-end space-x-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">දිනය තෝරන්න</label>
+                <input type="date" name="filter_date" value="{{ filter_date|default:'' }}" class="px-4 py-2 border rounded-lg outline-none">
+            </div>
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg">🔍 සොයන්න</button>
+            <a href="{% url 'lecturer_dashboard' %}" class="bg-slate-200 text-slate-700 font-medium py-2 px-4 rounded-lg">Clear</a>
+        </form>
+        
+        <div class="ml-auto">
+            <a href="{% url 'export_bookings' %}{% if filter_date %}?date={{ filter_date }}{% endif %}" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg shadow-sm flex items-center">
+                <span class="mr-2">📊</span> Download {% if filter_date %}Daily{% else %}All{% endif %} Excel
+            </a>
+        </div>
+    </div>
+    <!-- Bookings Table -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <h3 class="text-lg font-bold text-slate-800 mb-4 border-b pb-2">සියලුම වෙන්කිරීම් ලැයිස්තුව</h3>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="text-sm text-slate-500 border-b border-slate-100">
+                        <th class="pb-3 font-medium">දිනය</th>
+                        <th class="pb-3 font-medium">වේලාව</th>
+                        <th class="pb-3 font-medium">සිසුවාගේ අංකය</th>
+                        <th class="pb-3 font-medium">ලැප්ටොප් අංකය</th>
+                        <th class="pb-3 font-medium text-center">පැමිණීම (Attendance)</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm text-slate-700">
+                    {% if all_bookings %}
+                        {% for booking in all_bookings %}
+                        <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                            <td class="py-3">{{ booking.date }}</td>
+                            <td class="py-3">{{ booking.time_slot.start_time|time:"h:i A" }} - {{ booking.time_slot.end_time|time:"h:i A" }}</td>
+                            <td class="py-3 font-medium text-blue-600">{{ booking.student.reg_no }}</td>
+                            <td class="py-3 font-medium">{{ booking.laptop.lap_no }}</td>
+                            <td class="py-3 text-center">
+                                <form method="POST" action="{% url 'mark_attendance' booking.id %}">
+                                    {% csrf_token %}
+                                    {% if booking.attendance %}
+                                        <button type="submit" title="පැමිණීම ඉවත් කරන්න" class="bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shadow-sm">
+                                            ✓ පැමිණියා
+                                        </button>
+                                    {% else %}
+                                        <button type="submit" title="පැමිණීම සලකුණු කරන්න" class="bg-yellow-100 hover:bg-yellow-200 text-yellow-700 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shadow-sm">
+                                            ☐ සලකුණු කරන්න
+                                        </button>
+                                    {% endif %}
+                                </form>
+                            </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td class="py-3 text-slate-400 text-center" colspan="5">දැනට වෙන්කිරීම් කිසිවක් නොමැත</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
